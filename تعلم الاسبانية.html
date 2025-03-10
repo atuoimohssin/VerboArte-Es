@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تعلم الإسبانية للعرب - تصريف وجمل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        header {
+            background-color: #ff5733;
+            color: white;
+            padding: 15px;
+            font-size: 26px;
+            border-radius: 0 0 10px 10px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        h2, h3 {
+            color: #333;
+            margin: 15px 0;
+        }
+        .word, .tense-item {
+            background-color: #ffcccb;
+            padding: 12px;
+            margin: 8px auto;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            max-width: 700px;
+        }
+        .word:hover, .tense-item:hover {
+            background-color: #ff8a80;
+            transform: scale(1.02);
+        }
+        .controls, .verb-conjugation {
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="range"] {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        select {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #e0f7fa;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #ff5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #e04e2d;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: right;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            color: #333;
+            font-size: 18px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+        }
+        .verb-info {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ff5733;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+        }
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .word, .tense-item {
+                font-size: 16px;
+            }
+            header {
+                font-size: 20px;
+            }
+            .tab button {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+        }
+        @media (max-width: 480px) {
+            .tab button {
+                width: 50%;
+                float: none;
+                display: inline-block;
+            }
+            .word, .tense-item {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>تعلم الإسبانية للعرب 🎓 - تصريف الأفعال والجمل 🎙️</header>
+    <div class="container">
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Greetings')">التحيات</button>
+            <button class="tablinks" onclick="openTab(event, 'Basics')">الأساسيات</button>
+            <button class="tablinks" onclick="openTab(event, 'Phrases')">الجمل الشائعة</button>
+            <button class="tablinks" onclick="openTab(event, 'Conjugation')">تصريف الأفعال</button>
+        </div>
+
+        <div id="Greetings" class="tabcontent">
+            <h2>👋 التحيات</h2>
+            <div id="greetingsList"></div>
+            <div class="pagination">
+                <button onclick="changePage('Greetings', -1)">السابق</button>
+                <button onclick="changePage('Greetings', 1)">التالي</button>
+            </div>
+        </div>
+
+        <div id="Basics" class="tabcontent">
+            <h2>🛠️ الأساسيات</h2>
+            <div id="basicsList"></div>
+            <div class="pagination">
+                <button onclick="changePage('Basics', -1)">السابق</button>
+                <button onclick="changePage('Basics', 1)">التالي</button>
+            </div>
+        </div>
+
+        <div id="Phrases" class="tabcontent">
+            <h2>💬 الجمل الشائعة</h2>
+            <div id="phrasesList"></div>
+            <div class="pagination">
+                <button onclick="changePage('Phrases', -1)">السابق</button>
+                <button onclick="changePage('Phrases', 1)">التالي</button>
+            </div>
+        </div>
+
+        <div id="Conjugation" class="tabcontent">
+            <h2>🕒 تصريف الأفعال</h2>
+            <div class="verb-conjugation">
+                <label>اكتب الفعل بالإسبانية (مثل: hablar, ser):</label>
+                <input type="text" id="verbInput" placeholder="أدخل الفعل هنا" />
+                <select id="tenseSelect">
+                    <option value="Presente">الحاضر (Presente)</option>
+                    <option value="Presente Progresivo">الحاضر المستمر (Presente Progresivo)</option>
+                    <option value="Pretérito">الماضي البسيط (Pretérito)</option>
+                    <option value="Futuro">المستقبل (Futuro)</option>
+                    <option value="Imperfecto">الماضي الناقص (Imperfecto)</option>
+                    <option value="Condicional">الشرطي (Condicional)</option>
+                    <option value="Pretérito Perfecto">الماضي التام (Pretérito Perfecto)</option>
+                    <option value="Subjuntivo Presente">المنصوب الحاضر (Subjuntivo Presente)</option>
+                </select>
+                <button onclick="conjugateVerb()">تصريف</button>
+                <div id="conjugationResult"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <label>🔊 سرعة النطق:</label>
+            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" oninput="updateSpeed()" />
+            <label>👤 نوع الصوت:</label>
+            <select id="genderSelect" onchange="updateVoice()">
+                <option value="male">رجل (David)</option>
+                <option value="female">امرأة (Monica)</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        let speechRate = 1;
+        let selectedVoice;
+        let davidVoice;
+        let monicaVoice;
+
+        const itemsPerPage = 10;
+        const pages = {
+            Greetings: { current: 0, items: [
+                ["Hola", "مرحبًا"], ["Buenos días", "صباح الخير"], ["Buenas tardes", "مساء الخير (بعد الظهر)"],
+                ["Buenas noches", "مساء الخير (ليلًا)"], ["Adiós", "وداعًا"], ["Hasta luego", "إلى اللقاء"],
+                ["Hasta mañana", "إلى الغد"], ["Nos vemos", "نراك لاحقًا"], ["Bienvenido", "مرحبًا بك (للذكر)"],
+                ["Bienvenida", "مرحبًا بكِ (للأنثى)"], ["Saludos", "تحيات"], ["¿Qué tal?", "ما الأخبار؟"],
+                ["Encantado", "تشرفت بمعرفتك (للذكر)"], ["Encantada", "تشرفت بمعرفتك (للأنثى)"], ["Feliz día", "يوم سعيد"],
+                ["Buena suerte", "حظًا موفقًا"], ["Que tengas un buen día", "أتمنى لك يومًا جيدًا"], ["Hasta pronto", "إلى القريب"]
+            ]},
+            Basics: { current: 0, items: [
+                ["Sí", "نعم"], ["No", "لا"], ["Por favor", "من فضلك"], ["Gracias", "شكرًا"], ["De nada", "على الرحب"],
+                ["Lo siento", "آسف"], ["Perdón", "معذرة"], ["¿Qué?", "ماذا؟"], ["¿Quién?", "من؟"], ["¿Dónde?", "أين؟"],
+                ["¿Cuándo?", "متى؟"], ["¿Por qué?", "لماذا؟"], ["¿Cómo?", "كيف؟"], ["Aquí", "هنا"], ["Allí", "هناك"],
+                ["Ahora", "الآن"], ["Más", "أكثر"], ["Menos", "أقل"], ["Mucho", "كثيرًا"], ["Poco", "قليلًا"],
+                ["Siempre", "دائمًا"], ["Nunca", "أبدًا"], ["Bueno", "جيد"], ["Malo", "سيء"], ["Grande", "كبير"],
+                ["Pequeño", "صغير"], ["Fácil", "سهل"], ["Difícil", "صعب"]
+            ]},
+            Phrases: { current: 0, items: [
+                ["¿Cómo estás?", "كيف حالك؟"], ["Estoy bien, gracias", "أنا بخير، شكرًا"], ["¿Y tú?", "وأنت؟"],
+                ["Me llamo...", "اسمي..."], ["¿Cómo te llamas?", "ما اسمك؟"], ["¿Dónde está el baño?", "أين الحمام؟"],
+                ["¿Cuánto cuesta?", "كم يكلف؟"], ["No entiendo", "لا أفهم"], ["Habla más despacio, por favor", "تكلم ببطء أكثر، من فضلك"],
+                ["¿Puedes ayudarme?", "هل يمكنك مساعدتي؟"], ["Claro, aquí tienes", "بالطبع، تفضل"], ["Tengo hambre", "أنا جائع"],
+                ["Tengo sed", "أنا عطشان"], ["¿Qué hora es?", "كم الساعة؟"], ["Es la una", "الساعة الواحدة"],
+                ["Son las dos", "الساعة الثانية"], ["Voy a casa", "أنا ذاهب إلى البيت"], ["¿Dónde vives?", "أين تعيش؟"],
+                ["Necesito ayuda", "أحتاج مساعدة"], ["Estoy perdido", "أنا تائه"], ["¿Hablas árabe?", "هل تتحدث العربية؟"],
+                ["Quiero agua", "أريد ماء"], ["¿Dónde está la estación?", "أين المحطة؟"], ["Esto es muy caro", "هذا غالٍ جدًا"],
+                ["¿Puedo entrar?", "هل يمكنني الدخول؟"], ["Espera un momento", "انتظر لحظة"], ["No hay problema", "لا مشكلة"],
+                ["Estoy cansado", "أنا متعب"], ["Me gusta mucho", "أعجبني كثيرًا"], ["¿Qué significa esto?", "ماذا يعني هذا؟"]
+            ]}
+        };
+
+        function loadVoices() {
+            const voices = speechSynthesis.getVoices().filter(v => v.lang === "es-ES" || v.lang === "es-MX");
+            davidVoice = voices.find(v => v.name.toLowerCase().includes("david"));
+            monicaVoice = voices.find(v => v.name.toLowerCase().includes("monica"));
+            selectedVoice = davidVoice || monicaVoice || voices[0];
+            updateVoice();
+        }
+
+        function updateVoice() {
+            const gender = document.getElementById("genderSelect").value;
+            if (gender === "male") {
+                selectedVoice = davidVoice || (monicaVoice ? monicaVoice : speechSynthesis.getVoices()[0]);
+                if (!davidVoice) alert("صوت David غير متاح، سيتم استخدام صوت بديل.");
+            } else if (gender === "female") {
+                selectedVoice = monicaVoice || (davidVoice ? davidVoice : speechSynthesis.getVoices()[0]);
+                if (!monicaVoice) alert("صوت Monica غير متاح، سيتم استخدام صوت بديل.");
+            }
+        }
+
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speak(text) {
+            if (!selectedVoice) {
+                alert("لا يوجد صوت متاح! سيتم استخدام الصوت الافتراضي للمتصفح.");
+                selectedVoice = speechSynthesis.getVoices()[0];
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "es-ES";
+            utterance.rate = speechRate;
+            utterance.voice = selectedVoice;
+            speechSynthesis.speak(utterance);
+        }
+
+        function updateSpeed() {
+            speechRate = document.getElementById("speedControl").value;
+        }
+
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) tablinks[i].className = tablinks[i].className.replace(" active", "");
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            pages[tabName].current = 0;
+            renderPage(tabName);
+        }
+
+        function renderPage(tabName) {
+            const listDiv = document.getElementById(`${tabName.toLowerCase()}List`);
+            const { current, items } = pages[tabName];
+            const start = current * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedItems = items.slice(start, end);
+
+            listDiv.innerHTML = "";
+            paginatedItems.forEach(([spanish, arabic]) => {
+                listDiv.innerHTML += `<div class="word" onclick="speak('${spanish}')">${spanish} - ${arabic}</div>`;
+            });
+
+            const prevButton = document.querySelector(`#${tabName} .pagination button:first-child`);
+            const nextButton = document.querySelector(`#${tabName} .pagination button:last-child`);
+            prevButton.disabled = current === 0;
+            nextButton.disabled = end >= items.length;
+        }
+
+        function changePage(tabName, direction) {
+            const { current, items } = pages[tabName];
+            const maxPage = Math.ceil(items.length / itemsPerPage) - 1;
+            pages[tabName].current = Math.max(0, Math.min(current + direction, maxPage));
+            renderPage(tabName);
+        }
+
+        document.getElementsByClassName("tablinks")[0].click();
+
+        const verbDatabase = {
+            "hablar": { type: "regular", ending: "ar" },
+            "comer": { type: "regular", ending: "er" },
+            "vivir": { type: "regular", ending: "ir" },
+            "jugar": { 
+                type: "regularWithChange", 
+                ending: "ar", 
+                changes: { 
+                    "Presente": ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"],
+                    "Presente Progresivo": ["estoy jugando", "estás jugando", "está jugando", "estamos jugando", "estáis jugando", "están jugando"]
+                }
+            },
+            "pedir": { 
+                type: "regularWithChange", 
+                ending: "ir", 
+                changes: { 
+                    "Presente": ["pido", "pides", "pide", "pedimos", "pedís", "piden"],
+                    "Presente Progresivo": ["estoy pidiendo", "estás pidiendo", "está pidiendo", "estamos pidiendo", "estáis pidiendo", "están pidiendo"]
+                }
+            },
+            "decir": {
+                type: "irregular",
+                conjugations: {
+                    "Presente": ["digo", "dices", "dice", "decimos", "decís", "dicen"],
+                    "Presente Progresivo": ["estoy diciendo", "estás diciendo", "está diciendo", "estamos diciendo", "estáis diciendo", "están diciendo"],
+                    "Pretérito": ["dije", "dijiste", "dijo", "dijimos", "dijisteis", "dijeron"],
+                    "Futuro": ["diré", "dirás", "dirá", "diremos", "diréis", "dirان"],
+                    "Imperfecto": ["decía", "decías", "decيا", "decíamos", "decيais", "decيان"],
+                    "Condicional": ["diría", "dirías", "dirيا", "diríamos", "dirيais", "dirيان"],
+                    "Pretérito Perfecto": ["he dicho", "has dicho", "ha dicho", "hemos dicho", "habéis dicho", "han dicho"],
+                    "Subjuntivo Presente": ["diga", "digas", "diga", "digamos", "digáis", "digan"]
+                }
+            },
+            "ser": {
+                type: "irregular",
+                conjugations: {
+                    "Presente": ["soy", "eres", "es", "somos", "sois", "son"],
+                    "Presente Progresivo": ["estoy siendo", "estás siendo", "está siendo", "estamos siendo", "estáis siendo", "están siendo"],
+                    "Pretérito": ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fuerون"],
+                    "Futuro": ["seré", "serás", "serا", "seremos", "seréis", "serان"],
+                    "Imperfecto": ["era", "eras", "era", "éramos", "erais", "eran"],
+                    "Condicional": ["sería", "serías", "serيا", "seríamos", "serيais", "serيان"],
+                    "Pretérito Perfecto": ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"],
+                    "Subjuntivo Presente": ["sea", "seas", "sea", "seamos", "seáis", "sean"]
+                }
+            },
+            "ir": {
+                type: "irregular",
+                conjugations: {
+                    "Presente": ["voy", "vas", "va", "vamos", "vais", "van"],
+                    "Presente Progresivo": ["estoy yendo", "estás yendo", "está yendo", "estamos yendo", "estáis yendo", "están yendo"],
+                    "Pretérito": ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fuerون"],
+                    "Futuro": ["iré", "irás", "irá", "iremos", "iréis", "irán"],
+                    "Imperfecto": ["iba", "ibas", "iba", "íbamos", "ibais", "iban"],
+                    "Condicional": ["iría", "irías", "يريا", "iríamos", "irيais", "irيان"],
+                    "Pretérito Perfecto": ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"],
+                    "Subjuntivo Presente": ["vaya", "vayas", "vaya", "vayamos", "vayáis", "vayan"]
+                }
+            },
+            "tener": {
+                type: "irregular",
+                conjugations: {
+                    "Presente": ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
+                    "Presente Progresivo": ["estoy teniendo", "estás teniendo", "está teniendo", "estamos teniendo", "estáis teniendo", "están teniendo"],
+                    "Pretérito": ["tuve", "tuviste", "tuvo", "tuvimos", "tuvisteis", "tuvieron"],
+                    "Futuro": ["tendré", "tendrás", "tendrá", "tendremos", "tendréis", "tendران"],
+                    "Imperfecto": ["tenía", "tenías", "tenيا", "teníamos", "tenيais", "tenيان"],
+                    "Condicional": ["tendría", "tendرías", "tendريا", "tendرíamos", "tendريais", "tendريان"],
+                    "Pretérito Perfecto": ["he tenido", "has tenido", "ha tenido", "hemos tenido", "habéis tenido", "han tenido"],
+                    "Subjuntivo Presente": ["tenga", "tengas", "tenga", "tengamos", "tengáis", "tengan"]
+                }
+            },
+            "hacer": {
+                type: "irregular",
+                conjugations: {
+                    "Presente": ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"],
+                    "Presente Progresivo": ["estoy haciendo", "estás haciendo", "está haciendo", "estamos haciendo", "estáis haciendo", "están haciendo"],
+                    "Pretérito": ["hice", "hiciste", "hizo", "hicimos", "hicisteis", "hicieron"],
+                    "Futuro": ["haré", "harás", "hará", "haremos", "haréis", "harان"],
+                    "Imperfecto": ["hacía", "hacías", "hacيا", "hacíamos", "hacيais", "hacيان"],
+                    "Condicional": ["haría", "harías", "harيا", "haríamos", "harيais", "harيان"],
+                    "Pretérito Perfecto": ["he hecho", "has hecho", "ha hecho", "hemos hecho", "habéis hecho", "han hecho"],
+                    "Subjuntivo Presente": ["haga", "hagas", "haga", "hagamos", "hagáis", "hagan"]
+                }
+            }
+        };
+
+        const regularEndings = {
+            "ar": {
+                "Presente": ["o", "as", "a", "amos", "áis", "an"],
+                "Presente Progresivo": ["estoy {root}ando", "estás {root}ando", "está {root}ando", "estamos {root}ando", "estáis {root}ando", "están {root}ando"],
+                "Pretérito": ["é", "aste", "ó", "amos", "asteis", "aron"],
+                "Futuro": ["aré", "arás", "ará", "aremos", "aréis", "arán"],
+                "Imperfecto": ["aba", "abas", "aba", "ábamos", "abais", "aban"],
+                "Condicional": ["aría", "arías", "اريا", "aríamos", "aríais", "arيان"],
+                "Pretérito Perfecto": ["he {root}ado", "has {root}ado", "ha {root}ado", "hemos {root}ado", "habéis {root}ado", "han {root}ado"],
+                "Subjuntivo Presente": ["e", "es", "e", "emos", "éis", "en"]
+            },
+            "er": {
+                "Presente": ["o", "es", "e", "emos", "éis", "en"],
+                "Presente Progresivo": ["estoy {root}iendo", "estás {root}iendo", "está {root}iendo", "estamos {root}iendo", "estáis {root}iendo", "están {root}iendo"],
+                "Pretérito": ["í", "iste", "ió", "imos", "isteis", "ieron"],
+                "Futuro": ["eré", "erás", "erá", "eremos", "eréis", "erان"],
+                "Imperfecto": ["ía", "ías", "يا", "íamos", "íais", "يان"],
+                "Condicional": ["ería", "erías", "erيا", "eríamos", "eríais", "erيان"],
+                "Pretérito Perfecto": ["he {root}ido", "has {root}ido", "ha {root}ido", "hemos {root}ido", "habéis {root}ido", "han {root}ido"],
+                "Subjuntivo Presente": ["a", "as", "a", "amos", "áis", "an"]
+            },
+            "ir": {
+                "Presente": ["o", "es", "e", "imos", "ís", "en"],
+                "Presente Progresivo": ["estoy {root}iendo", "estás {root}iendo", "está {root}iendo", "estamos {root}iendo", "estáis {root}iendo", "están {root}iendo"],
+                "Pretérito": ["í", "iste", "ió", "imos", "isteis", "ieron"],
+                "Futuro": ["iré", "irás", "irá", "iremos", "iréis", "iran"],
+                "Imperfecto": ["ía", "ías", "يا", "íamos", "íais", "يان"],
+                "Condicional": ["iría", "irías", "irيا", "iríamos", "iríais", "irيان"],
+                "Pretérito Perfecto": ["he {root}ido", "has {root}ido", "ha {root}ido", "hemos {root}ido", "habéis {root}ido", "han {root}ido"],
+                "Subjuntivo Presente": ["a", "as", "a", "amos", "áis", "an"]
+            }
+        };
+
+        function conjugateVerb() {
+            const verb = document.getElementById("verbInput").value.trim().toLowerCase();
+            const tense = document.getElementById("tenseSelect").value;
+            const resultDiv = document.getElementById("conjugationResult");
+            resultDiv.innerHTML = "";
+
+            if (!verb) {
+                resultDiv.innerHTML = "يرجى إدخال فعل!";
+                return;
+            }
+
+            const verbData = verbDatabase[verb] || (verb.endsWith("ar") ? { type: "regular", ending: "ar" } : verb.endsWith("er") ? { type: "regular", ending: "er" } : verb.endsWith("ir") ? { type: "regular", ending: "ir" } : null);
+            if (!verbData) {
+                resultDiv.innerHTML = "الفعل غير صحيح أو غير مدعوم.";
+                return;
+            }
+
+            const isIrregular = verbData.type === "irregular";
+            const hasChanges = verbData.type === "regularWithChange" && verbData.changes[tense];
+            resultDiv.innerHTML += `<div class="verb-info">نوع الفعل: ${isIrregular ? "غير منتظم" : "منتظم"}${hasChanges ? " (مع تغيير)" : ""}</div>`;
+
+            const pronouns = ["أنا", "أنت", "هو/هي", "نحن", "أنتم", "هم"];
+            let conjugations;
+
+            if (isIrregular) {
+                conjugations = verbData.conjugations[tense];
+            } else if (hasChanges) {
+                conjugations = verbData.changes[tense];
+            } else {
+                const root = verb.slice(0, -2);
+                conjugations = regularEndings[verbData.ending][tense].map(end => end.includes("{root}") ? end.replace("{root}", root) : root + end);
+            }
+
+            resultDiv.innerHTML += `<h3>${tense}</h3>`;
+            conjugations.forEach((conj, i) => {
+                resultDiv.innerHTML += `<div class="tense-item" onclick="speak('${conj}')">${conj} - ${pronouns[i]}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
